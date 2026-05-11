@@ -1,65 +1,141 @@
-import Image from "next/image";
+"use client";
+
+import { FormEvent, useMemo, useState } from "react";
+
+type Screen = "login" | "profile" | "home";
+
+type Contenido = {
+  id: number;
+  titulo: string;
+  tipo: "pelicula" | "serie";
+  anio: number;
+  descripcion?: string | null;
+  clasificacion_edad: string;
+};
+
+const API_BASE = "/backend/api/v1";
 
 export default function Home() {
+  const [screen, setScreen] = useState<Screen>("login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [token, setToken] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [contenidos, setContenidos] = useState<Contenido[]>([]);
+
+  const stats = useMemo(() => {
+    const peliculas = contenidos.filter((item) => item.tipo === "pelicula").length;
+    return { peliculas, series: contenidos.length - peliculas };
+  }, [contenidos]);
+
+  const onLogin = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch(`${API_BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error("No pudimos iniciar sesión. Revisá tu email/contraseña.");
+      }
+
+      const data = (await response.json()) as { access_token: string };
+      setToken(data.access_token);
+      setScreen("profile");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error inesperado al iniciar sesión");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const enterAsGuest = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch(`${API_BASE}/productos/contenidos`);
+      if (!response.ok) {
+        throw new Error("No se pudo cargar el catálogo desde el backend.");
+      }
+      const data = (await response.json()) as Contenido[];
+      setContenidos(data);
+      setScreen("home");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error inesperado cargando catálogo");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = () => {
+    setToken("");
+    setContenidos([]);
+    setEmail("");
+    setPassword("");
+    setError("");
+    setScreen("login");
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="min-h-screen bg-neutral-950 text-white">
+      {screen === "login" && (
+        <section className="mx-auto flex min-h-screen max-w-6xl items-center justify-center p-6">
+          <form className="w-full max-w-md rounded-2xl border border-white/10 bg-black/70 p-8" onSubmit={onLogin}>
+            <h1 className="mb-2 text-4xl font-black tracking-tight text-red-600">TITOFLIX</h1>
+            <p className="mb-6 text-sm text-zinc-300">Iniciá sesión para conectar con el backend real.</p>
+            <label className="mb-3 block text-sm">Email</label>
+            <input className="mb-4 w-full rounded-md bg-zinc-900 p-3" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <label className="mb-3 block text-sm">Contraseña</label>
+            <input className="mb-6 w-full rounded-md bg-zinc-900 p-3" type="password" minLength={8} required value={password} onChange={(e) => setPassword(e.target.value)} />
+            <button className="w-full rounded-md bg-red-600 p-3 font-semibold" disabled={loading} type="submit">
+              {loading ? "Entrando..." : "Entrar"}
+            </button>
+            {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
+          </form>
+        </section>
+      )}
+
+      {screen === "profile" && (
+        <section className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center p-6 text-center">
+          <h2 className="mb-8 text-4xl font-bold">¿Quién está mirando?</h2>
+          <button className="rounded-xl border border-white/20 bg-zinc-900 px-8 py-5 text-lg hover:bg-zinc-800" onClick={enterAsGuest}>
+            Entrar como invitado
+          </button>
+          <p className="mt-4 text-sm text-zinc-400">Token de sesión activo: {token ? "Sí" : "No"}</p>
+          {error && <p className="mt-6 text-sm text-red-400">{error}</p>}
+        </section>
+      )}
+
+      {screen === "home" && (
+        <>
+          <header className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-black/80 px-6 py-4 backdrop-blur">
+            <h2 className="text-2xl font-extrabold text-red-600">TITOFLIX</h2>
+            <button className="rounded bg-red-700 px-4 py-2 text-sm" onClick={logout}>Salir</button>
+          </header>
+          <main className="mx-auto w-full max-w-6xl p-6">
+            <h3 className="text-3xl font-bold">Catálogo conectado al backend</h3>
+            <p className="mt-2 text-zinc-400">Total: {contenidos.length} · Películas: {stats.peliculas} · Series: {stats.series}</p>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {contenidos.map((item) => (
+                <article key={item.id} className="rounded-xl border border-white/10 bg-zinc-900 p-4">
+                  <p className="text-xs uppercase tracking-wide text-red-400">{item.tipo} · {item.anio}</p>
+                  <h4 className="mt-1 text-xl font-semibold">{item.titulo}</h4>
+                  <p className="mt-2 text-sm text-zinc-300">{item.descripcion || "Sin descripción disponible."}</p>
+                  <p className="mt-3 text-xs text-zinc-500">Clasificación: {item.clasificacion_edad}</p>
+                </article>
+              ))}
+            </div>
+            {contenidos.length === 0 && <p className="mt-8 text-zinc-400">No hay contenidos para mostrar por ahora.</p>}
+          </main>
+        </>
+      )}
     </div>
   );
 }
