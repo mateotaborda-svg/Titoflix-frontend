@@ -227,7 +227,7 @@ export default function Home() {
           <form onSubmit={createGenero} className="rounded-xl border border-white/10 bg-zinc-900/50 p-4 space-y-3">
             <h2 className="font-bold">1) Crear género</h2>
             <input className="w-full rounded bg-zinc-950 p-2" placeholder="Drama" value={nuevoGenero} onChange={(e) => setNuevoGenero(e.target.value)} />
-            <button className="rounded bg-red-600 px-3 py-2">Guardar género</button>
+            <button type="submit" className="rounded bg-red-600 px-3 py-2">Guardar género</button>
           </form>
 
           <form onSubmit={createContenido} className="rounded-xl border border-white/10 bg-zinc-900/50 p-4 space-y-3">
@@ -242,7 +242,7 @@ export default function Home() {
             <input className="w-full rounded bg-zinc-950 p-2" placeholder="IDs géneros (ej: 1,2)" value={contenidoForm.generos_ids} onChange={(e) => setContenidoForm({ ...contenidoForm, generos_ids: e.target.value })} required />
             {contenidoForm.tipo === "pelicula" && <input className="w-full rounded bg-zinc-950 p-2" type="number" placeholder="Duración min" value={contenidoForm.duracion_min} onChange={(e) => setContenidoForm({ ...contenidoForm, duracion_min: e.target.value })} required />}
             <textarea className="w-full rounded bg-zinc-950 p-2" placeholder="Descripción" value={contenidoForm.descripcion} onChange={(e) => setContenidoForm({ ...contenidoForm, descripcion: e.target.value })} />
-            <button className="rounded bg-red-600 px-3 py-2">Guardar contenido</button>
+            <button type="submit" className="rounded bg-red-600 px-3 py-2">Guardar contenido</button>
           </form>
 
           <form onSubmit={createTemporada} className="rounded-xl border border-white/10 bg-zinc-900/50 p-4 space-y-3">
@@ -252,7 +252,7 @@ export default function Home() {
               <input className="rounded bg-zinc-950 p-2" type="number" placeholder="número" value={temporadaForm.numero} onChange={(e) => setTemporadaForm({ ...temporadaForm, numero: Number(e.target.value) })} />
               <input className="rounded bg-zinc-950 p-2" type="number" placeholder="año" value={temporadaForm.anio} onChange={(e) => setTemporadaForm({ ...temporadaForm, anio: Number(e.target.value) })} />
             </div>
-            <button className="rounded bg-red-600 px-3 py-2">Guardar temporada</button>
+            <button type="submit" className="rounded bg-red-600 px-3 py-2">Guardar temporada</button>
           </form>
 
           <form onSubmit={createEpisodio} className="rounded-xl border border-white/10 bg-zinc-900/50 p-4 space-y-3">
@@ -263,7 +263,7 @@ export default function Home() {
               <input className="rounded bg-zinc-950 p-2" type="number" placeholder="número" value={episodioForm.numero} onChange={(e) => setEpisodioForm({ ...episodioForm, numero: Number(e.target.value) })} />
               <input className="rounded bg-zinc-950 p-2" type="number" placeholder="duración" value={episodioForm.duracion_min} onChange={(e) => setEpisodioForm({ ...episodioForm, duracion_min: Number(e.target.value) })} />
             </div>
-            <button className="rounded bg-red-600 px-3 py-2">Guardar episodio</button>
+            <button type="submit" className="rounded bg-red-600 px-3 py-2">Guardar episodio</button>
           </form>
         </div>
 
