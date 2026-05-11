@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "Titoflix API"              # Nombre de la aplicación
     ENVIRONMENT: str = "development"            # Entorno (development, production, etc.)
 
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/titoflix")  # URL de conexión
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@127.0.0.1:5432/titoflix")  # URL de conexión
 
     HOST: str = os.getenv("HOST", "127.0.0.1")                  # Host local donde escucha Uvicorn
     PORT: int = int(os.getenv("PORT", "8000"))                            # Puerto donde corre la app

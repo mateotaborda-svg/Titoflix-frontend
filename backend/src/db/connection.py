@@ -3,7 +3,10 @@ from sqlalchemy.orm import declarative_base, sessionmaker   # Base para modelos 
 
 from src.config.env import settings               # Importa configuración (ej: DATABASE_URL)
 
-engine = create_engine(settings.DATABASE_URL)     # Crea el engine de conexión usando la URL de la Base de Datos
+engine = create_engine(                              # Crea el engine de conexión usando la URL de la Base de Datos
+    settings.DATABASE_URL,
+    connect_args={"check_same_thread": False} if settings.DATABASE_URL.startswith("sqlite") else {},
+)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)  
 # Configura las conexiones con la base de datos de las sesiones
 Base = declarative_base()                         
