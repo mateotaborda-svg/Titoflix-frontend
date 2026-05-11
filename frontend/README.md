@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Titoflix Frontend (Next.js)
 
-## Getting Started
+Panel frontend para operar el backend de Titoflix.
 
-First, run the development server:
+## Levantar entorno
+
+1. Backend en `http://127.0.0.1:8000`.
+2. Frontend:
 
 ```bash
+cd frontend
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrir `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Login demo
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Si el backend está con seed activo:
 
-## Learn More
+- Email: `pati@titoflix.local`
+- Password: `12345678`
 
-To learn more about Next.js, take a look at the following resources:
+## Flujo para subir Películas y Series
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+El dashboard usa endpoints reales del backend (`/backend/api/v1/...` vía rewrite).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 1) Crear Género
+- Form: **Crear género**.
+- Endpoint: `POST /productos/generos?nombre=<nombre>`.
 
-## Deploy on Vercel
+### 2) Crear Contenido (Película o Serie)
+- Form: **Crear película o serie**.
+- Endpoint: `POST /productos/contenidos`.
+- Campos clave:
+  - `tipo`: `pelicula` o `serie`
+  - `generos_ids`: lista de IDs de géneros
+  - Para `pelicula` enviar `duracion_min`
+  - Para `serie` enviar `duracion_min = null`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3) Si es Serie, cargar Temporadas
+- Form: **Cargar temporada**.
+- Endpoint: `POST /productos/temporadas`.
+- Requiere `contenido_id` de una serie existente.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 4) Cargar Episodios
+- Form: **Cargar episodio**.
+- Endpoint: `POST /productos/episodios`.
+- Requiere `temporada_id` creado en el paso anterior.
+
+## Notas
+
+- El catálogo y los géneros se refrescan desde backend tras cada alta.
+- El frontend muestra feedback de éxito/error en pantalla.
+- Si cambiás backend host/puerto, podés usar `NEXT_PUBLIC_BACKEND_URL` en `frontend/next.config.ts`.
