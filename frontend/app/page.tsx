@@ -99,7 +99,7 @@ export default function Home() {
     setContenidos(dataContenidos);
   };
 
-  const onLogin = async (event: FormEvent) => {
+  const onLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
     setFlash(null);
@@ -119,7 +119,7 @@ export default function Home() {
     }
   };
 
-  const createGenero = async (event: FormEvent) => {
+  const createGenero = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!nuevoGenero.trim()) return;
     try {
@@ -132,7 +132,7 @@ export default function Home() {
     }
   };
 
-  const createContenido = async (event: FormEvent) => {
+  const createContenido = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       const generos_ids = contenidoForm.generos_ids
@@ -160,7 +160,7 @@ export default function Home() {
     }
   };
 
-  const createTemporada = async (event: FormEvent) => {
+  const createTemporada = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       const temporada = await request<Temporada>("/productos/temporadas", {
@@ -178,7 +178,7 @@ export default function Home() {
     }
   };
 
-  const createEpisodio = async (event: FormEvent) => {
+  const createEpisodio = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       const episodio = await request<Episodio>("/productos/episodios", {
